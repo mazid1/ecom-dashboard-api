@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { type EnvironmentVariables } from './config/environment-variables';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,7 +11,9 @@ async function bootstrap() {
 
   app.setGlobalPrefix(globalPrefix);
 
-  const port = process.env.PORT ?? 3333;
+  const configService = app.get(ConfigService<EnvironmentVariables>);
+
+  const port = configService.get('PORT');
 
   await app.listen(port);
 
