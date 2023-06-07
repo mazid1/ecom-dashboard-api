@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { type EnvironmentVariables } from './config/environment-variables';
 
 async function bootstrap() {
@@ -10,6 +11,16 @@ async function bootstrap() {
   const globalPrefix = 'api';
 
   app.setGlobalPrefix(globalPrefix);
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Ecom-Dashboard API')
+    .setDescription('The Ecom-Dashboard API documentation')
+    .setVersion('1.0')
+    .addTag('products')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document);
 
   const configService = app.get(ConfigService<EnvironmentVariables>);
 
