@@ -6,6 +6,7 @@ import { ProductsModule } from './modules/products/products.module';
 import * as Joi from 'joi';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EnvironmentVariables } from './config/environment-variables';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { EnvironmentVariables } from './config/environment-variables';
       inject: [ConfigService],
     }),
     ProductsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
