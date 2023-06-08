@@ -12,6 +12,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { PatchProductDto } from './dtos/patch-product.dto';
+import IdDto from 'src/common/id.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -23,7 +24,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
+  findById(@Param() { id }: IdDto) {
     return this.productsService.findById(id);
   }
 
@@ -33,13 +34,13 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  patch(@Param('id') id: string, @Body() interviewDto: PatchProductDto) {
+  patch(@Param() { id }: IdDto, @Body() interviewDto: PatchProductDto) {
     return this.productsService.update(id, interviewDto);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  delete(@Param('id') id: string) {
+  delete(@Param() { id }: IdDto) {
     this.productsService.delete(id);
   }
 
