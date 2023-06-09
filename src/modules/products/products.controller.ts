@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -40,8 +38,8 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  patch(@Param() { id }: IdDto, @Body() interviewDto: PatchProductDto) {
-    return this.productsService.update(id, interviewDto);
+  patch(@Param() { id }: IdDto, @Body() productDto: PatchProductDto) {
+    return this.productsService.update(id, productDto);
   }
 
   @Delete(':id')
