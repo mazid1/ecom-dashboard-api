@@ -3,22 +3,27 @@ import {
   HttpCode,
   Post,
   Req,
-  Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RequestWithUser } from './types/request-with-user';
+import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
+import { User } from '../users/schemas/user.schema';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  @HttpCode(200)
+  constructor(private readonly authService: AuthService) {}
+
   @UseGuards(LocalAuthGuard)
+  @UseInterceptors(MongooseClassSerializerInterceptor(User))
+  @HttpCode(200)
   @Post('login')
-  async logIn(@Req() request: Request, @Res() response: Response) {
+  async logIn(@Req() request: RequestWithUser) {
     const { user } = request;
-    console.log(user);
-    // const cookie = this.authenticationService.getCookieWithJwtToken(user.id);
-    // response.setHeader('Set-Cookie', cookie);
-    return response.send(user);
+    const cookie = this.authService.getCookieWithAccessToken(user._id);
+    request.res.setHeader('Set-Cookie', cookie);
+    return user;
   }
 }
