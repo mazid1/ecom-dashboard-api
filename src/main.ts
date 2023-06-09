@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { type EnvironmentVariables } from './config/environment-variables';
 import * as cookieParser from 'cookie-parser';
+import { AuthModule } from './modules/auth/auth.module';
+import { ProductsModule } from './modules/products/products.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +22,7 @@ async function bootstrap() {
     .setDescription('The Ecom-Dashboard API documentation')
     .setVersion('1.0')
     .addTag('products')
+    .addTag('auth')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);

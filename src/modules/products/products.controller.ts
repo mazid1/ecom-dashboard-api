@@ -15,7 +15,9 @@ import { CreateProductDto } from './dtos/create-product.dto';
 import { PatchProductDto } from './dtos/patch-product.dto';
 import IdDto from 'src/common/id.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('products')
 @UseGuards(JwtAuthGuard)
 @Controller('products')
 export class ProductsController {
