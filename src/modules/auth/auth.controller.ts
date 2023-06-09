@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   HttpCode,
   Post,
   Req,
@@ -12,10 +13,15 @@ import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-
 import { User } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UsersService } from '../users/users.service';
+import JwtRefreshGuard from './guards/jwt-refresh.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @UseInterceptors(MongooseClassSerializerInterceptor(User))
@@ -23,8 +29,19 @@ export class AuthController {
   @Post('login')
   async logIn(@Req() request: RequestWithUser) {
     const { user } = request;
-    const cookie = this.authService.getCookieWithAccessToken(user._id);
-    request.res.setHeader('Set-Cookie', cookie);
+    const accessTokenCookie = this.authService.getCookieWithAccessToken(
+      user._id,
+    );
+    const { cookie: refreshTokenCookie, token: refreshToken } =
+      this.authService.getCookieWithRefreshToken(user._id);
+
+    // store refresh token in DB
+    await this.usersService.setCurrentRefreshToken(refreshToken, user._id);
+
+    request.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
     return user;
   }
 
@@ -32,7 +49,31 @@ export class AuthController {
   @Post('logout')
   @HttpCode(200)
   async logOut(@Req() request: RequestWithUser) {
-    // await this.usersService.removeRefreshToken(request.user.id);
+    // remove refresh token from DB
+    await this.usersService.removeRefreshToken(request.user._id);
+    // remove cookies from browser
     request.res.setHeader('Set-Cookie', this.authService.getCookiesForLogOut());
+  }
+
+  @UseInterceptors(MongooseClassSerializerInterceptor(User))
+  @UseGuards(JwtRefreshGuard)
+  @Get('refresh')
+  refresh(@Req() request: RequestWithUser) {
+    const { user } = request;
+
+    const accessTokenCookie = this.authService.getCookieWithAccessToken(
+      user._id,
+    );
+    const { cookie: refreshTokenCookie, token: refreshToken } =
+      this.authService.getCookieWithRefreshToken(user._id);
+
+    // replace existing refresh token in DB with the new one, so that it can not be used again
+    this.usersService.setCurrentRefreshToken(refreshToken, user._id);
+
+    request.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
+    return user;
   }
 }

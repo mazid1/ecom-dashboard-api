@@ -42,8 +42,28 @@ export class AuthService {
     )}`;
   }
 
+  getCookieWithRefreshToken(userId: string) {
+    const payload: TokenPayload = { userId };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+    const cookie = `Refresh=${token}; HttpOnly; Path=/api/auth/refresh; Secure; Max-Age=${this.configService.get(
+      'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+    )}`;
+    return {
+      cookie,
+      token,
+    };
+  }
+
   getCookiesForLogOut() {
-    return ['Authentication=; HttpOnly; Path=/; Max-Age=0'];
+    return [
+      'Authentication=; HttpOnly; Path=/; Max-Age=0',
+      'Refresh=; HttpOnly; Path=/api/auth/refresh; Max-Age=0',
+    ];
   }
 
   private async _verifyPassword(
