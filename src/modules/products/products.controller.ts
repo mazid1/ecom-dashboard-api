@@ -21,7 +21,7 @@ import { IdsDto } from 'src/common/ids.dto';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
-
+  // todo: implement pagination
   @Get()
   findAll() {
     return this.productsService.findAll();
