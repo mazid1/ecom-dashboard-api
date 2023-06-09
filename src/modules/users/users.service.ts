@@ -10,10 +10,18 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async getByUsername(username: string) {
-    const user = this.userModel.findOne({ username });
+  async findByUsername(username: string) {
+    const user = await this.userModel.findOne({ username }).exec();
     if (!user) {
       throw new NotFoundException('User with this username does not exist');
+    }
+    return user;
+  }
+
+  async findById(id: string) {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException('User with this id does not exist');
     }
     return user;
   }

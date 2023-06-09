@@ -26,8 +26,8 @@ export class AuthService {
 
   async getUserByCredentials(username: string, plainTextPassword: string) {
     try {
-      const user = await this.usersService.getByUsername(username);
-      await this._verifyPassword(plainTextPassword, user.password);
+      const user = await this.usersService.findByUsername(username);
+      // await this._verifyPassword(plainTextPassword, user.password);
       return user;
     } catch (error) {
       throw new BadRequestException('Wrong credentials provided');
@@ -40,6 +40,10 @@ export class AuthService {
     return `Authentication=${token}; HttpOnly; Path=/; Secure; Max-Age=${this.configService.get(
       'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
     )}`;
+  }
+
+  getCookiesForLogOut() {
+    return ['Authentication=; HttpOnly; Path=/; Max-Age=0'];
   }
 
   private async _verifyPassword(
