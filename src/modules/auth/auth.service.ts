@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dtos/register.dto';
 import { compare, hash } from 'bcrypt';
@@ -6,11 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from 'src/config/environment-variables';
 import { TokenPayload } from './types/token-payload';
+import { MongoErrorCode } from '../database/mongo-error-code.enum';
 
 @Injectable()
 export class AuthService {
-  private static DUPLICATE_KEY_ERROR = 11000;
-
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -26,9 +29,10 @@ export class AuthService {
       });
       return createdUser;
     } catch (error) {
-      if (error.code === AuthService.DUPLICATE_KEY_ERROR) {
+      if (error.code === MongoErrorCode.DUPLICATE_KEY_ERROR) {
         throw new BadRequestException('Username is already used');
       }
+      throw new InternalServerErrorException();
     }
   }
 

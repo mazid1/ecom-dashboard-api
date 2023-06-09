@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ProductsModule } from './modules/products/products.module';
 import * as Joi from 'joi';
-import { MongooseModule } from '@nestjs/mongoose';
-import { EnvironmentVariables } from './config/environment-variables';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { DatabaseModule } from './modules/database/database.module';
 
 @Module({
   imports: [
@@ -22,15 +21,7 @@ import { UsersModule } from './modules/users/users.module';
         JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.number().required(),
       }),
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (
-        configService: ConfigService<EnvironmentVariables>,
-      ) => ({
-        uri: configService.get<string>('MONGO_URI'),
-      }),
-      inject: [ConfigService],
-    }),
+    DatabaseModule,
     ProductsModule,
     AuthModule,
     UsersModule,
