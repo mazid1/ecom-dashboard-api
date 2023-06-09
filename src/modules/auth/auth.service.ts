@@ -9,6 +9,8 @@ import { TokenPayload } from './types/token-payload';
 
 @Injectable()
 export class AuthService {
+  private static DUPLICATE_KEY_ERROR = 11000;
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -17,11 +19,17 @@ export class AuthService {
 
   async register(registrationData: RegisterDto) {
     const passwordHash = await hash(registrationData.password, 10);
-    const createdUser = await this.usersService.create({
-      ...registrationData,
-      password: passwordHash,
-    });
-    return createdUser;
+    try {
+      const createdUser = await this.usersService.create({
+        ...registrationData,
+        password: passwordHash,
+      });
+      return createdUser;
+    } catch (error) {
+      if (error.code === AuthService.DUPLICATE_KEY_ERROR) {
+        throw new BadRequestException('Username is already used');
+      }
+    }
   }
 
   async getUserByCredentials(username: string, plainTextPassword: string) {

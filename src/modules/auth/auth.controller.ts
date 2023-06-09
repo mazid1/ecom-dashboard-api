@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   Post,
+  Redirect,
   Req,
   UseGuards,
   UseInterceptors,
@@ -15,6 +17,8 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
 import JwtRefreshGuard from './guards/jwt-refresh.guard';
+import { RegisterDto } from './dtos/register.dto';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +26,30 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
   ) {}
+
+  @UseInterceptors(MongooseClassSerializerInterceptor(User))
+  @Post('register')
+  async register(
+    @Body() registrationData: RegisterDto,
+    @Req() request: Request,
+  ) {
+    const user = await this.authService.register(registrationData);
+
+    const accessTokenCookie = this.authService.getCookieWithAccessToken(
+      user._id,
+    );
+    const { cookie: refreshTokenCookie, token: refreshToken } =
+      this.authService.getCookieWithRefreshToken(user._id);
+
+    // store refresh token in DB
+    await this.usersService.setCurrentRefreshToken(refreshToken, user._id);
+
+    request.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
+    return user;
+  }
 
   @UseGuards(LocalAuthGuard)
   @UseInterceptors(MongooseClassSerializerInterceptor(User))
