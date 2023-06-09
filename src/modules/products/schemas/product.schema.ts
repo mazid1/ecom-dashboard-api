@@ -1,14 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ProductStatus } from '../enums/product-status.enum';
-import { HydratedDocument } from 'mongoose';
 import { Price } from '../dtos/price.dto';
+import { Transform } from 'class-transformer';
+import { Document } from 'mongoose';
 
-export type ProductDocument = HydratedDocument<Product>;
+export type ProductDocument = Product & Document;
 
 @Schema({
   timestamps: true,
 })
 export class Product {
+  @Transform(({ value }) => value.toString())
+  _id: string;
+
   @Prop({ required: true })
   name: string;
 
