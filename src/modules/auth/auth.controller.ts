@@ -4,7 +4,6 @@ import {
   Get,
   HttpCode,
   Post,
-  Redirect,
   Req,
   UseGuards,
   UseInterceptors,
