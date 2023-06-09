@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { UserDocument } from 'src/modules/users/schemas/user.schema';
+import { User } from 'src/modules/users/schemas/user.schema';
 
 export type RequestWithUser = Request & {
-  user: UserDocument;
+  user: User;
 };

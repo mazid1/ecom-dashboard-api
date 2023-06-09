@@ -27,7 +27,7 @@ export class AuthService {
   async getUserByCredentials(username: string, plainTextPassword: string) {
     try {
       const user = await this.usersService.findByUsername(username);
-      // await this._verifyPassword(plainTextPassword, user.password);
+      await this._verifyPassword(plainTextPassword, user.password);
       return user;
     } catch (error) {
       throw new BadRequestException('Wrong credentials provided');
