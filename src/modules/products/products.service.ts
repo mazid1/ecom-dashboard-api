@@ -40,11 +40,17 @@ export class ProductsService {
   }
 
   async delete(id: string) {
-    const result = this.productModel.findByIdAndDelete(id).exec();
+    const result = await this.productModel.findByIdAndDelete(id);
     if (!result) {
       throw new NotFoundException(`Product #${id} not found`);
     }
+    return result;
   }
 
-  // todo: implement delete many
+  async deleteMany(ids: string[]): Promise<{
+    acknowledged: boolean;
+    deletedCount: number;
+  }> {
+    return this.productModel.deleteMany({ _id: { $in: ids } });
+  }
 }

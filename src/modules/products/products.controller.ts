@@ -16,6 +16,7 @@ import { PatchProductDto } from './dtos/patch-product.dto';
 import IdDto from 'src/common/id.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { IdsDto } from 'src/common/ids.dto';
 
 @ApiTags('products')
 @UseGuards(JwtAuthGuard)
@@ -43,11 +44,13 @@ export class ProductsController {
     return this.productsService.update(id, interviewDto);
   }
 
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   delete(@Param() { id }: IdDto) {
-    this.productsService.delete(id);
+    return this.productsService.delete(id);
   }
 
-  // todo: implement batch delete route
+  @Delete()
+  deleteMany(@Body() { ids }: IdsDto) {
+    return this.productsService.deleteMany(ids);
+  }
 }
