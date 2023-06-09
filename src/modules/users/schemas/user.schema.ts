@@ -13,7 +13,7 @@ export class User {
 
   @Prop({ required: true })
   @Exclude()
-  passwordHash: string;
+  password: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
