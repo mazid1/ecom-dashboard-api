@@ -8,6 +8,7 @@ export type UserDocument = User & Document;
   timestamps: true,
 })
 export class User {
+  @Exclude()
   @Transform(({ value }) => value.toString())
   _id: string;
 
@@ -16,7 +17,7 @@ export class User {
 
   @Prop({ required: true })
   @Exclude()
-  password: string;
+  passwordHash: string;
 
   @Prop({ nullable: true })
   @Exclude()
