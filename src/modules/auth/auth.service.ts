@@ -30,7 +30,6 @@ export class AuthService {
       return createdUser;
     } catch (error) {
       if (error.code === MongoErrorCode.DUPLICATE_KEY_ERROR) {
-        console.log(error);
         const duplicateKeys = Object.keys(error.keyValue).join(',');
         throw new BadRequestException(`${duplicateKeys} already used`);
       }
