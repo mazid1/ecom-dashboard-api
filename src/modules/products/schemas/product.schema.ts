@@ -34,6 +34,8 @@ export class Product {
     default: new Date(),
   })
   availableSince: Date;
+
+  // todo: add category field
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
