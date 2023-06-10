@@ -26,7 +26,7 @@ export class Product {
   price: Price;
 
   @Prop({
-    default: ProductStatus.AVAILABLE,
+    default: ProductStatus.Available,
   })
   status: ProductStatus;
 
