@@ -31,7 +31,8 @@ export class AuthService {
     } catch (error) {
       if (error.code === MongoErrorCode.DUPLICATE_KEY_ERROR) {
         console.log(error);
-        throw new BadRequestException('Username is already used');
+        const duplicateKeys = Object.keys(error.keyValue).join(',');
+        throw new BadRequestException(`${duplicateKeys} already used`);
       }
       throw new InternalServerErrorException();
     }
