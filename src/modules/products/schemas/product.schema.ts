@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ProductStatus } from '../enums/product-status.enum';
-import { Price } from '../dtos/price.dto';
 import { Transform } from 'class-transformer';
 import { Document } from 'mongoose';
+import { ProductStatus } from '../enums/product-status.enum';
 
 export type ProductDocument = Product & Document;
 
@@ -16,14 +15,8 @@ export class Product {
   @Prop({ required: true })
   name: string;
 
-  @Prop({
-    type: Price,
-    default: {
-      amount: 0,
-      currency: '$',
-    },
-  })
-  price: Price;
+  @Prop({ required: true })
+  price: number;
 
   @Prop({
     default: ProductStatus.Available,

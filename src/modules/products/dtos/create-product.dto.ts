@@ -1,16 +1,13 @@
-import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
-  IsObject,
+  IsNumber,
   IsOptional,
   IsString,
-  ValidateNested,
 } from 'class-validator';
 import { ProductStatus } from '../enums/product-status.enum';
-import { Price } from './price.dto';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateProductDto {
   @ApiProperty()
@@ -18,12 +15,9 @@ export class CreateProductDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => Price)
-  price: Price;
+  @ApiProperty()
+  @IsNumber()
+  price: number;
 
   @ApiPropertyOptional({
     enumName: 'ProductStatus',
