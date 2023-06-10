@@ -21,7 +21,19 @@ export class User {
 
   @Prop({ nullable: true })
   @Exclude()
-  public refreshTokenHash?: string;
+  refreshTokenHash?: string;
+
+  @Prop({ required: true })
+  firstName: string;
+
+  @Prop()
+  lastName: string;
+
+  @Prop({ required: true, unique: true })
+  email: string;
+
+  @Prop()
+  address: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -3,14 +3,14 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { EnvironmentVariables } from 'src/config/environment-variables';
+import { MongoErrorCode } from '../database/mongo-error-code.enum';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dtos/register.dto';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from 'src/config/environment-variables';
 import { TokenPayload } from './types/token-payload';
-import { MongoErrorCode } from '../database/mongo-error-code.enum';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +30,7 @@ export class AuthService {
       return createdUser;
     } catch (error) {
       if (error.code === MongoErrorCode.DUPLICATE_KEY_ERROR) {
+        console.log(error);
         throw new BadRequestException('Username is already used');
       }
       throw new InternalServerErrorException();
