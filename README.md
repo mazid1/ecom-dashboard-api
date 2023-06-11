@@ -37,6 +37,9 @@ pnpm run up
 
 ### Run the API server
 
+Server will be running on por `3333`
+You can see API documentation at `http://localhost:3333/docs`
+
 ```bash
 # development
 $ pnpm run start
