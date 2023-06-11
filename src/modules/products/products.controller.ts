@@ -8,13 +8,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
+import { ApiTags } from '@nestjs/swagger';
+import IdDto from '../../common/id.dto';
+import { IdsDto } from '../../common/ids.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { PatchProductDto } from './dtos/patch-product.dto';
-import IdDto from 'src/common/id.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
-import { IdsDto } from 'src/common/ids.dto';
+import { ProductsService } from './products.service';
 
 @ApiTags('products')
 @UseGuards(JwtAuthGuard)
