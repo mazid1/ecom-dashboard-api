@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Product } from './schemas/product.schema';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { PatchProductDto } from './dtos/patch-product.dto';
+import { DeleteManyResponse } from 'src/common/delete-many-response';
 
 @Injectable()
 export class ProductsService {
@@ -12,11 +13,11 @@ export class ProductsService {
     private readonly productModel: Model<Product>,
   ) {}
 
-  async findAll() {
+  async findAll(): Promise<Product[]> {
     return this.productModel.find().exec();
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<Product> {
     const product = await this.productModel.findById(id).exec();
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
@@ -24,12 +25,12 @@ export class ProductsService {
     return product;
   }
 
-  async create(productDto: CreateProductDto) {
+  async create(productDto: CreateProductDto): Promise<Product> {
     const product = new this.productModel(productDto);
     return product.save();
   }
 
-  async update(id: string, productDto: PatchProductDto) {
+  async update(id: string, productDto: PatchProductDto): Promise<Product> {
     const updatedProduct = await this.productModel
       .findByIdAndUpdate(id, productDto, { new: true })
       .exec();
@@ -39,7 +40,7 @@ export class ProductsService {
     return updatedProduct;
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<Product> {
     const result = await this.productModel.findByIdAndDelete(id);
     if (!result) {
       throw new NotFoundException(`Product #${id} not found`);
@@ -47,10 +48,7 @@ export class ProductsService {
     return result;
   }
 
-  async deleteMany(ids: string[]): Promise<{
-    acknowledged: boolean;
-    deletedCount: number;
-  }> {
+  async deleteMany(ids: string[]): Promise<DeleteManyResponse> {
     return this.productModel.deleteMany({ _id: { $in: ids } });
   }
 }
